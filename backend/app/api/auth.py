@@ -1,34 +1,20 @@
-from app.schemas.auth import LoginResponse
-from app.common.exceptions import BussinessException
+from app.services import auth_service
 from app.common.response import Response
-from app.models.user import User
-from app.schemas.user import UserResponse
 from fastapi import APIRouter, Depends
-from app.schemas.auth import LoginRequest
-
+from app.schemas.auth import LoginRequest, RegisterRequest
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.utils.password import verify_password
-from app.utils.jwt import create_access_token
 
 router = APIRouter(prefix="/auth", tags=['权限验证'])
 
 
 @router.post('/login')
 def login(data: LoginRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == data.username).first()
-    #判断密码
-    if not user or not verify_password(data.password, user.password):
-        raise BussinessException('账号或密码错误')
+    result = auth_service.login(db, data)
+    return Response.success(message='登陆成功', data=result)
 
-    if user.status != 1:
-        raise BussinessException('账号已被封禁')
-    token = create_access_token(user_id=user.id)
-    # return Response.success(data={
-    #     "token": token,
-    #     "user": UserResponse.model_validate(user)
-    # })
-    return Response.success(message='登陆成功',
-                            data = LoginResponse(
-                                token=token,
-                                user=UserResponse.model_validate(user)))
+
+@router.post('/register')
+def login(data: RegisterRequest, db: Session = Depends(get_db)):
+    auth_service.register(db, data)
+    return Response.success(message='注册成功')

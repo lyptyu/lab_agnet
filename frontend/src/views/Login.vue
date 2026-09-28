@@ -4,8 +4,8 @@
       <h1 style="font-size: 28px">实验室预约系统</h1>
       <div style="margin-top: 5px; margin-bottom: 30px">基于Agent智能预约系统</div>
 
-      <el-form :model="form" label-width="auto" style="max-width: 600px">
-        <el-form-item>
+      <el-form ref="formRef" :rules="rules" :model="form" label-width="0px" style="max-width: 100%">
+        <el-form-item prop="username">
           <el-input
             size="large"
             v-model="form.username"
@@ -13,7 +13,7 @@
             :prefix-icon="User"
           />
         </el-form-item>
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input
             type="password"
             size="large"
@@ -33,7 +33,8 @@
             >登 录</el-button
           >
           <div style="text-align: right; margin-top: 20px">
-            还没有账号？请 <a style="color: var(--el-color-primary)" href="/register">注册</a>
+            还没有账号？请
+            <router-link style="color: var(--el-color-primary)" to="/register">注册</router-link>
           </div>
         </div>
       </el-form>
@@ -49,23 +50,40 @@ import router from '@/router'
 import { loginApi } from '@/api/auth'
 import { useUser } from '@/utils/user'
 
+const formRef = ref()
+const rules = {
+  username: [
+    { required: true, message: '请输入账号', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
+}
 const form = reactive({
   username: '',
   password: ''
 })
 const { saveLoginData } = useUser()
+
 const loadingValue = ref(false)
 
 const login = async () => {
-  loadingValue.value = true
-
-  const res = await loginApi(form)
-  if (res.code == 200) {
-    saveLoginData(res.data)
-    await ElMessage.success('登录成功')
-    await router.push('/manager/home')
+  const valid = await formRef.value.validate().catch(()=>false)
+  if (!valid) {
+    return
   }
-  loadingValue.value = false
+  loadingValue.value = true
+  try {
+    const res = await loginApi(form)
+
+    if (res.code == 200) {
+      saveLoginData(res.data)
+      await ElMessage.success('登录成功')
+      await router.push('/manager/home')
+    }
+  } finally {
+    loadingValue.value = false
+  }
 }
 </script>
 
