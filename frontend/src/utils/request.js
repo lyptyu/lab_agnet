@@ -3,7 +3,7 @@ import { getToken, logout } from './auth'
 import { ElMessage } from 'element-plus'
 import router from '@/router'
 const service = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || '',
   timeout: 30000 //30s
 })
 // 请求拦截器的配置

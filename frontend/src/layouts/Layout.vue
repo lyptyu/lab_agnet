@@ -19,8 +19,8 @@
           <el-dropdown>
             <span class="el-dropdown-link">
               <div style="display: flex; align-items: center; cursor: pointer">
-                <img src="@/assets/imgs/logo.png" alt="" style="width: 30px; border-radius: 50%" />
-                <div style="margin-left: 3px">管理员</div>
+                <img :src="userInfo?.avatar" alt="" style="width: 30px; border-radius: 50%" />
+                <div style="margin-left: 3px">{{ userInfo?.name }}</div>
                 <el-icon class="el-icon--right">
                   <ArrowDown />
                 </el-icon>
@@ -28,6 +28,7 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
+                <el-dropdown-item @click="goPersonInfo"> 个人信息 </el-dropdown-item>
                 <el-dropdown-item @click="handleLogout"> 退出登录 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -65,10 +66,15 @@
 
 <script setup>
 import router from '@/router'
+import { useUser } from '@/utils/user'
 import { logout } from '@/utils/auth'
 import { Menu as IconMenu, House, Setting, User } from '@element-plus/icons-vue'
+const { userInfo } = useUser()
 const handleLogout = () => {
   logout()
   router.push('/login')
+}
+const goPersonInfo = () => {
+  router.push('/manager/profile')
 }
 </script>
