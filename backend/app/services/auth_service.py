@@ -34,5 +34,4 @@ def register(db: Session, data: RegisterRequest):
                 status=1)
     db.add(user_model)
     db.commit()
-    db.flush()
-    return UserResponse.model_validate(user_model)
+    db.refresh(user_model)
