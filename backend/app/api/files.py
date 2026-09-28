@@ -1,3 +1,4 @@
+from app.schemas.file import FileResponse
 from app.common.response import Response
 from app.config import UPLOAD_DIR
 import uuid
@@ -10,7 +11,9 @@ from fastapi import File, UploadFile
 from fastapi.routing import APIRouter
 import os
 import shutil
+
 router = APIRouter(prefix="/files", tags=['文件管理'])
+
 
 @router.post('/upload')
 def upload(file: UploadFile = File(...)):
@@ -35,10 +38,14 @@ def upload(file: UploadFile = File(...)):
     # 流失写文件
     with open(save_path, 'wb') as f:
         shutil.copyfileobj(file.file, f)
-    
-    return Response.success(data={
-        "original_name": original_name,
-        "disk_name": disk_name,
-        "size":file.size,
-        "url": f'/uploads/{disk_name}'
-    })
+
+    # return Response.success(data={
+    #     "original_name": original_name,
+    #     "disk_name": disk_name,
+    #     "size":file.size,
+    #     "url": f'/uploads/{disk_name}'
+    # })
+    return Response.success(data=FileResponse(original_name=original_name,
+                                              disk_name=disk_name,
+                                              size=file.size,
+                                              url=f'/uploads/{disk_name}'))
