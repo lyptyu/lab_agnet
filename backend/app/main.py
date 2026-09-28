@@ -1,3 +1,4 @@
+from app.config import UPLOAD_DIR
 from fastapi.exceptions import RequestValidationError
 from fastapi import HTTPException
 from fastapi import FastAPI
@@ -10,7 +11,7 @@ from app.common.exceptions import (BussinessException,
                                    validation_exception_handler,
                                    global_exception_handler)
 from starlette.middleware.cors import CORSMiddleware
-
+from fastapi.staticfiles import StaticFiles
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -32,6 +33,8 @@ app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, global_exception_handler)
 
+#挂载静态文件目录
+app.mount('/uploads', StaticFiles(directory=UPLOAD_DIR), name='uploads')
 
 @app.get('/')
 def root():
