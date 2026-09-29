@@ -8,7 +8,7 @@
       </template>
       <div style="margin-bottom: 10px">
         <el-input
-          placeholder="请输入账号或密码查询"
+          placeholder="请输入账号或名称查询"
           v-model="params.keywords"
           style="width: 240px; margin-right: 8px"
           clearable

@@ -1,3 +1,4 @@
+from app.schemas.user import UserCraeteRequest
 from operator import or_
 from app.common.response import PageResponse
 from app.schemas.user import PasswordUpdateRequest
@@ -48,3 +49,43 @@ def get_user_page_list(db: Session, page: int, page_size: int,
     return PageResponse(
         list=[UserResponse.model_validate(item) for item in items],
         total=total)
+
+
+def create_user(db: Session, data: UserCraeteRequest):
+    exist = db.query(User).filter(User.username == data.username).first()
+    if exist:
+        raise BussinessException(message='账号已存在')
+    user = User(username=data.username,
+                password=hash_password(data.password),
+                name=data.name,
+                role=data.role,
+                email=data.email,
+                phone=data.phone,
+                avatar=data.avatar,
+                status=data.status)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return UserResponse.model_validate(user)
+
+
+def update_user(db: Session, user_id: int, data: UserUpdateRequest):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise BussinessException(message='用户不存在')
+    payload = data.model_dump(exclude_none=True)
+    for field, value in payload.items():
+        setattr(user, field, value)
+    db.commit()
+    db.refresh(user)
+    return UserResponse.model_validate(user)
+
+
+def delete_user(db: Session, user_id: int, current_user=User):
+    if user_id == current_user.id:
+        raise BussinessException(message='不能删除自己')
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise BussinessException(message='用户不存在')
+    db.delete(user)
+    db.commit()
