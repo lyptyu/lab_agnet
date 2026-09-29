@@ -1,3 +1,4 @@
+from app.common.exceptions import BussinessException
 from app.models.user import User
 from fastapi import status
 from fastapi import HTTPException
@@ -27,3 +28,10 @@ def get_current_user(token: str = Depends(oauth2_scheme),
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="用户被封禁")
     return user
+
+
+def get_current_admin(current_user: User = Depends(get_current_user),
+                      db: Session = Depends(get_db)) -> User:
+    if current_user.role != 'admin':
+        raise BussinessException(message='无权限访问', code=403)
+    return current_user

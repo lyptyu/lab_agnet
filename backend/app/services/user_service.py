@@ -1,3 +1,5 @@
+from operator import or_
+from app.common.response import PageResponse
 from app.schemas.user import PasswordUpdateRequest
 from app.utils.password import hash_password
 from app.common.exceptions import BussinessException
@@ -30,3 +32,19 @@ def update_password(db: Session, user: User, data: PasswordUpdateRequest):
     user.password = hash_password(data.new_password)
     db.commit()
     db.refresh(user)
+
+
+def get_user_page_list(db: Session, page: int, page_size: int,
+                       keywords: str | None):
+    #select * from user where username like '%张%' or name like '%张%'
+    query = db.query(User)
+    if keywords:
+        query = query.filter(
+            or_(User.username.ilike(f'%{keywords}%'),
+                User.name.ilike(f'%{keywords}%')))
+    total = query.count()
+    items = query.order_by(User.id.desc()).offset(
+        (page - 1) * page_size).limit(page_size).all()
+    return PageResponse(
+        list=[UserResponse.model_validate(item) for item in items],
+        total=total)
