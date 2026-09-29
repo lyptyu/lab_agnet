@@ -20,7 +20,6 @@
             :http-request="handleFileUpload"
             :show-file-list="false"
             accept="image/jpeg,image/png,image/gif,image/webp"
-            :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload"
           >
             <img v-if="form.avatar" :src="form.avatar" class="avatar" />
@@ -30,16 +29,16 @@
         <el-form-item label="账号">
           <el-input disabled v-model="form.username" placeholer="请输入账号" />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" placeholer="请输入名称" />
         </el-form-item>
         <el-form-item label="角色">
           <el-input disabled v-model="roleLabel" />
         </el-form-item>
-        <el-form-item label="邮箱">
+        <el-form-item label="邮箱" prop="email">
           <el-input v-model="form.email" placeholer="请输入邮箱" />
         </el-form-item>
-        <el-form-item label="手机号">
+        <el-form-item label="手机号" prop="phone">
           <el-input v-model="form.phone" placeholer="请输入手机号" />
         </el-form-item>
         <el-form-item>
@@ -72,9 +71,9 @@ const form = reactive({
 })
 
 const rules = {
-  name: [{ require: true, message: '请输入名称', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入名称', trigger: 'blur' }],
   email: [{ type: 'email', message: '邮箱格式错误', trigger: 'blur' }],
-  phone: [{ pattern: /^1[3-9]\d[9]$/, message: '手机号格式错误', trigger: 'blur' }]
+  phone: [{ pattern: /^1[3-9]\d{9}$/, message: '手机号格式错误', trigger: 'blur' }]
 }
 
 const roleLabel = computed(() => {

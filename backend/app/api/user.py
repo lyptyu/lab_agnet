@@ -1,4 +1,5 @@
 
+from app.schemas.user import PasswordUpdateRequest
 from sqlalchemy.orm import Session
 from app.schemas.user import UserUpdateRequest
 from app.dependencies.auth import get_current_user
@@ -13,14 +14,22 @@ from app.database import get_db
 router = APIRouter(prefix="/user", tags=['用户信息'])
 
 
-@router.get('/info')
+@router.get('/me')
 def get_user_info(current_user: User = Depends(get_current_user)):
     return Response.success(data=user_service.get_user_info(current_user))
 
 
-@router.put('/update')
+@router.put('/me')
 def update_user_info(data: UserUpdateRequest,
                      current_user: User = Depends(get_current_user),
                      db: Session = Depends(get_db)):
     res = user_service.update_user_info(db, current_user, data)
     return Response.success(data=res)
+
+
+@router.put('/password')
+def update_password(data: PasswordUpdateRequest,
+                     current_user: User = Depends(get_current_user),
+                     db: Session = Depends(get_db)):
+    res = user_service.update_password(db, current_user, data)
+    return Response.success()

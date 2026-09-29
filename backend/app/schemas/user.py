@@ -1,3 +1,4 @@
+from hashlib import new
 from pydantic import ConfigDict
 from pydantic import BaseModel
 
@@ -19,3 +20,7 @@ class UserUpdateRequest(BaseModel):
     email: str | None = None
     phone: str | None = None
     avatar: str | None = None
+
+class PasswordUpdateRequest(BaseModel):
+    old_password:str
+    new_password: str
