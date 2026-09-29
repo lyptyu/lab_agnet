@@ -1,4 +1,4 @@
-from app.schemas.user import UserCraeteRequest
+from app.schemas.user import UserCreateRequest
 from operator import or_
 from app.common.response import PageResponse
 from app.schemas.user import PasswordUpdateRequest
@@ -51,7 +51,7 @@ def get_user_page_list(db: Session, page: int, page_size: int,
         total=total)
 
 
-def create_user(db: Session, data: UserCraeteRequest):
+def create_user(db: Session, data: UserCreateRequest):
     exist = db.query(User).filter(User.username == data.username).first()
     if exist:
         raise BussinessException(message='账号已存在')

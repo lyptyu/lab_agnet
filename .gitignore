@@ -1,3 +1,4 @@
 time.json
 .openpost/
 backend/uploads/
+backend/.venv/

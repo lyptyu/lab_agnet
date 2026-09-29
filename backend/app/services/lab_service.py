@@ -1,7 +1,7 @@
 from operator import or_
 from app.common.response import PageResponse
 from app.common.exceptions import BussinessException
-from app.schemas.lab import LabUpdateRequest, LabResponse, LabCraeteRequest
+from app.schemas.lab import LabUpdateRequest, LabResponse, LabCreateRequest
 from sqlalchemy.orm import Session
 from app.models.lab import Lab
 
@@ -19,7 +19,7 @@ def get_lab_page_list(db: Session, page: int, page_size: int,
         list=[LabResponse.model_validate(item) for item in items], total=total)
 
 
-def create_lab(db: Session, data: LabCraeteRequest):
+def create_lab(db: Session, data: LabCreateRequest):
     exist = db.query(Lab).filter(Lab.name == data.name).first()
     if exist:
         raise BussinessException(message='实验室已存在')

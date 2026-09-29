@@ -16,7 +16,7 @@ class LabResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class LabCraeteRequest(BaseModel):
+class LabCreateRequest(BaseModel):
     name: str
     description: str | None = None
     img: str | None = None

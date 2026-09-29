@@ -1,6 +1,6 @@
 from app.dependencies.auth import get_current_admin
 from sqlalchemy.orm import Session
-from app.schemas.lab import LabUpdateRequest,LabCraeteRequest,LabResponse
+from app.schemas.lab import LabUpdateRequest,LabCreateRequest
 from app.models.lab import Lab
 from fastapi import APIRouter, Depends
 from app.common.response import Response
@@ -21,7 +21,7 @@ def get_lab_list(page: int = 1,
 
 
 @router.post('') 
-def create_lab(data: LabCraeteRequest,
+def create_lab(data: LabCreateRequest,
                 current_user: Lab = Depends(get_current_admin),
                 db: Session = Depends(get_db)):
     res = lab_service.create_lab(db, data)
