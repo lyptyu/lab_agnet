@@ -48,7 +48,7 @@
 <script setup>
   import { reactive, ref } from 'vue'
   import { ElMessage } from 'element-plus'
-  import { updatePassword } from '@/api/user'
+  import { updatePasswordApi } from '@/api/user'
   import { logout } from '@/utils/auth'
   import router from '@/router'
 
@@ -81,7 +81,7 @@
     if (!valid) return
     submitting.value = true
     try {
-      const res = await updatePassword({
+      const res = await updatePasswordApi({
         old_password: form.oldPassword,
         new_password: form.newPassword
       })

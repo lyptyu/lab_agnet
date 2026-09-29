@@ -50,7 +50,7 @@
 </template>
 
 <script setup>
-import { getUserInfo, updateUserInfo } from '@/api/user'
+import { getUserInfoApi, updateUserInfoApi } from '@/api/user'
 import { uploadFileApi } from '@/api/file'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useUser } from '@/utils/user'
@@ -105,7 +105,7 @@ const handleFileUpload = async ({ file }) => {
 const loadUserInfo = async () => {
   loading.value = true
   try {
-    const res = await getUserInfo()
+    const res = await getUserInfoApi()
     if (res.code === 200) {
       Object.assign(form, res.data)
     }
@@ -120,7 +120,7 @@ const handleSubmit = async () => {
   if (!valid) return
   submitting.value = true
   try {
-    const res = await updateUserInfo(form)
+    const res = await updateUserInfoApi(form)
     if (res.code === 200) {
       updateUser(res.data)
       ElMessage.success('更新成功')

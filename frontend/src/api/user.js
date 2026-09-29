@@ -3,7 +3,7 @@ import request from '@/utils/request'
 /**
  * 获取当前登录用户
  */
-export function getUserInfo() {
+export function getUserInfoApi() {
   return request({
     url: '/api/user/me',
     method: 'get',
@@ -13,7 +13,7 @@ export function getUserInfo() {
 /**
  * 修改当前登录用户个人信息
  */
-export function updateUserInfo(data) {
+export function updateUserInfoApi(data) {
   return request({
     url: '/api/user/me',
     method: 'put',
@@ -23,7 +23,7 @@ export function updateUserInfo(data) {
 /**
  * 修改密码
  */
-export function updatePassword(data) {
+export function updatePasswordApi(data) {
   return request({
     url: '/api/user/password',
     method: 'put',
@@ -38,5 +38,37 @@ export function getUserPageList(params) {
     url: '/api/user/list',
     method: 'get',
     params
+  })
+}
+
+/**
+ * 新增用户
+ */
+export function createUserApi(data) {
+  return request({
+    url: '/api/user',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 修改用户
+ */
+export function updateUserApi(userId, data) {
+  return request({
+    url: `/api/user/${userId}`,
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 删除用户
+ */
+export function deleteUserApi(userId) {
+  return request({
+    url: `/api/user/${userId}`,
+    method: 'delete'
   })
 }
