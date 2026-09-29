@@ -57,7 +57,7 @@ def update_equipment(db: Session, equipment_id: int,
     if not lab:
         raise BussinessException(message='实验室不存在')
     exist = db.query(Equipment).filter(Equipment.lab_id == lab_id,
-                                       Equipment.name == name,Equipment.id != equipment_id)
+                                       Equipment.name == name,Equipment.id != equipment_id).first()
     
     if exist:
         raise BussinessException(message='同一个实验室不能存在同名设备')
