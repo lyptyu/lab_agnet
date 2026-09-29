@@ -63,8 +63,8 @@ def update_user(user_id: int,
     res = user_service.update_user(db, user_id, data)
     return Response.success(data=res)
 @router.delete('/{user_id}')
-def update_user(user_id: int,
+def delete_user(user_id: int,
                 current_user: User = Depends(get_current_admin),
                 db: Session = Depends(get_db)):
-    res = user_service.delete_user(db, user_id, current_user)
+    user_service.delete_user(db, user_id, current_user)
     return Response.success()

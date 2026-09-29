@@ -3,6 +3,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi import HTTPException
 from fastapi import FastAPI
 from app.models.user import User
+from app.models.lab import Lab
 from app.database import Base, engine
 from app.api import api
 from app.common.exceptions import (BussinessException,
