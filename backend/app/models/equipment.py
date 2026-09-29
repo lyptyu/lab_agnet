@@ -5,7 +5,7 @@ from app.models.lab import Lab
 
 
 class Equipment(Base):
-    __tablename__ = 'equipment'
+    __tablename__ = 'equipments'
     __table_args__ = {"comment": "实验室设备表"}
     lab_id: Mapped[int] = mapped_column(ForeignKey("labs.id"),
                                         comment="所属实验室",
