@@ -2,9 +2,7 @@
   <div>
     <el-card>
       <template #header>
-        <div style="font-size: 16px; font-weight: bold">
-          实验室管理
-        </div>
+        <div style="font-size: 16px; font-weight: bold">实验室管理</div>
       </template>
       <div style="margin-bottom: 10px">
         <el-input
@@ -120,12 +118,7 @@
           />
         </el-form-item>
         <el-form-item label="简介">
-          <el-input
-            v-model="form.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入简介"
-          />
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入简介" />
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">

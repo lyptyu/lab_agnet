@@ -38,26 +38,31 @@
       </el-header>
       <el-container>
         <el-aside width="220px">
-          <el-menu router style="height: 100%" default-active="/manager/home">
+          <el-menu
+            router
+            :default-active="router.currentRoute.value.path"
+            style="height: 100%"
+            default-active="/manager/home"
+          >
             <el-menu-item index="/manager/home">
               <el-icon><icon-menu /></el-icon>
-              <span>系统首页</span>
+              系统首页
             </el-menu-item>
-            <el-menu-item v-if="userInfo?.role === 'admin'" index="/manager/lab">
+            <el-menu-item index="/manager/lablist" v-if="userInfo?.role === 'student'">
+              <el-icon><OfficeBuilding /></el-icon>
+              实验室列表
+            </el-menu-item>
+            <el-menu-item index="/manager/lab" v-if="userInfo?.role === 'admin'">
               <el-icon><House /></el-icon>
               实验室管理
             </el-menu-item>
-            <el-menu-item index="/manager/equ">
-              <el-icon><Setting /></el-icon>
-              <span>设备列表管理</span>
-            </el-menu-item>
-            <el-menu-item v-if="userInfo?.role === 'admin'" index="/manager/user">
-              <el-icon><User /></el-icon>
-              <span>用户管理</span>
-            </el-menu-item>
-            <el-menu-item v-if="userInfo?.role === 'admin'" index="/manager/equipment">
+            <el-menu-item index="/manager/equipment" v-if="userInfo?.role === 'admin'">
               <el-icon><Setting /></el-icon>
               设备列表管理
+            </el-menu-item>
+            <el-menu-item index="/manager/user" v-if="userInfo?.role === 'admin'">
+              <el-icon><User /></el-icon>
+              用户管理
             </el-menu-item>
           </el-menu>
         </el-aside>

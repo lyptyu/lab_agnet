@@ -6,12 +6,17 @@ from sqlalchemy.orm import Session
 from app.models.lab import Lab
 
 
-def get_lab_page_list(db: Session, page: int, page_size: int,
-                      keywords: str | None):
+def get_lab_page_list(db: Session,
+                      page: int,
+                      page_size: int,
+                      keywords: str | None,
+                      status: int | None = None):
     #select * from lab where name like '%xxx%'
     query = db.query(Lab)
     if keywords:
         query = query.filter(Lab.name.ilike(f'%{keywords}%'))
+    if status:
+        query = query.filter(Lab.status == status)
     total = query.count()
     items = query.order_by(Lab.id.desc()).offset(
         (page - 1) * page_size).limit(page_size).all()
@@ -50,3 +55,10 @@ def delete_lab(db: Session, lab_id: int):
         raise BussinessException(message='实验室不存在')
     db.delete(lab)
     db.commit()
+
+
+def get_lab(db: Session, lab_id: int):
+    lab = db.query(Lab).filter(Lab.id == lab_id).first()
+    if not lab:
+        raise BussinessException(message='实验室不存在')
+    return LabResponse.model_validate(lab)

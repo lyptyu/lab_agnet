@@ -1,3 +1,4 @@
+from app.dependencies.auth import get_current_user
 from app.dependencies.auth import get_current_admin
 from sqlalchemy.orm import Session
 from app.schemas.equipment import EquipmentUpdateRequest,EquipmentResponse,EquipmentCreateRequest
@@ -15,7 +16,7 @@ def get_equipment_list(page: int = 1,
                   page_size: int = 10,
                   keywords: str | None = None,
                   lab_id: int | None = None,
-                  current_user: Equipment = Depends(get_current_admin),
+                  current_user: Equipment = Depends(get_current_user),
                   db: Session = Depends(get_db)):
     res = equipment_service.get_equipment_page_list(db, page, page_size, keywords,lab_id)
     return Response.success(data=res)

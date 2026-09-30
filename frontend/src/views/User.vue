@@ -112,7 +112,7 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button>取消</el-button>
+        <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" :loading="formLoading" @click="handleSave">确定</el-button>
       </template>
     </el-dialog>
