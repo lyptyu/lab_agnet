@@ -13,4 +13,4 @@ class Lab(Base):
     capacity:Mapped[str] = mapped_column(Integer, comment="容量",default = 0)
     open_time:Mapped[str] = mapped_column(String(20), comment="开放开始时间", nullable=True)
     close_time:Mapped[str] = mapped_column(String(20), comment="开放结束时间", nullable=True)
-    status: Mapped[int] = mapped_column(String(20), comment="状态,0-关闭 1-开放", default = 1)
+    status: Mapped[int] = mapped_column(comment="状态,0-关闭 1-开放", default = 1)
