@@ -9,7 +9,7 @@ export function createReservationApi(data) {
     method: 'post',
     data
   })
-}import request from '@/utils/request'
+}
 
 /**
  * 查询预约记录

@@ -1,3 +1,6 @@
+from fastapi.concurrency import asynccontextmanager
+from app.services import reservation_service
+import asyncio
 from app.config import UPLOAD_DIR
 from fastapi.exceptions import RequestValidationError
 from fastapi import HTTPException
@@ -15,9 +18,18 @@ from app.common.exceptions import (BussinessException,
                                    global_exception_handler)
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    task =  asyncio.create_task(reservation_service.run_exire_scan())
+    yield
+    task.cancel()
+
+
+app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost:5174",
     "http://127.0.0.1:5174",
@@ -38,6 +50,7 @@ app.add_exception_handler(Exception, global_exception_handler)
 
 #挂载静态文件目录
 app.mount('/uploads', StaticFiles(directory=UPLOAD_DIR), name='uploads')
+
 
 @app.get('/')
 def root():

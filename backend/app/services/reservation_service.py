@@ -1,3 +1,5 @@
+import asyncio
+from app.database import SessionLocal
 from app.common.response import PageResponse
 from app.schemas.reservation import ReservationResponse
 from datetime import datetime
@@ -105,8 +107,7 @@ def cancel_reservation(db: Session, current_user: User, reservation_id: int):
     db.commit()
 
 
-def audit_reservation(db: Session, reservation_id: int,
-                      status: int):
+def audit_reservation(db: Session, reservation_id: int, status: int):
     if status not in [1, 2]:
         raise BussinessException(message='审核状态错误')
     item = db.query(Reservation).filter(
@@ -117,3 +118,32 @@ def audit_reservation(db: Session, reservation_id: int,
         raise BussinessException(message="预约记录已审核，无法审核")
     item.status = status
     db.commit()
+
+
+def expire_pending_reservations():
+    db = SessionLocal()
+    try:
+        now = datetime.now()
+        today = now.strftime("%Y-%m-%d")
+        time = now.strftime("%H:%M:%S")
+        items = db.query(Reservation).filter(
+            Reservation.status == 0).all()  #拿到所有待审核预约单
+        changed = False
+        for item in items:
+            if item.date < today or (item.date == today
+                                     and item.end_time <= time):
+                item.status = 3  # 过期自动驳回
+                changed = True
+        if changed:
+            db.commit()
+    finally:
+        db.close()
+
+
+async def run_exire_scan():
+    """1分钟扫描一次"""
+    while True:
+        print('run_exire_scan正在执行中')
+        expire_pending_reservations()
+        await asyncio.sleep(60)
+
