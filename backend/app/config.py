@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str
     JWT_EXPIRE_HOURS: int = 24
     JWT_ALGORITHM: str = "HS256"
+    LLM_API_KEY: str
+    LLM_MODEL: str
+    LLM_BASE_URL: str
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env",
                                       env_file_encoding='utf-8')
 
@@ -17,10 +20,18 @@ settings = Settings()
 
 UPLOAD_DIR = BASE_DIR / 'uploads'
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-MAX_FILE_SIZE = 100 * 1024 * 1024 #100MB
-
+MAX_FILE_SIZE = 100 * 1024 * 1024  #100MB
 
 ALLOWED_EXTENSIONS = {
-    ".jpg", ".jpeg", ".png", ".gif", ".webp",
-    ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".zip",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif",
+    ".webp",
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".zip",
 }
