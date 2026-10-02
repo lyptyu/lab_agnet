@@ -8,3 +8,4 @@ PyJWT==2.13.0
 python-multipart==0.0.32
 cryptography==50.0.1
 openai==3.14.1
+chromadb==1.5.9
