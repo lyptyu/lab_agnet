@@ -3,3 +3,17 @@ time.json
 backend/uploads/
 backend/.venv/
 **/**/__pycache__
+
+# 环境变量文件（含密钥，禁止提交）
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# 数据库文件
+*.db
+*.sqlite3
+backend/data/
+
+# 日志
+*.log
