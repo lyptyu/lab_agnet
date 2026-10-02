@@ -1,3 +1,4 @@
+from app.services import kb_service
 from app.schemas.ai import ChatMessage
 from app.schemas.ai import ChatRequest
 from app.common.exceptions import BussinessException
@@ -5,14 +6,10 @@ from app.config import settings
 from openai import OpenAI
 
 SYSTEM_PROMPT = """你是智能实验室预约系统的助手，回答要简洁。
-你可以介绍本系统的预约流程：
-1. 登录后打开实验室列表，选择实验室或设备
-2. 填写日期和时段并提交，状态为待审核
-3. 管理员审核通过后即可使用
-4. 待审核、已通过的预约，本人可以取消
-你目前查不到真实的实验室、设备、预约数据。
-如果用户问某个实验室几点开门、有没有某台设备，请说明去「实验室列表」查看，不要编造具体数据。
-如果用户问了跟实验室无关的问题，可以直接拒绝回答。
+如果下面提供了实验室资料，请依据资料回答，不要编造资料里没有的时间、规则、设备。
+你目前查不到真实的实验室空闲、设备库存、预约记录。
+如果用户问现在哪些实验室能约、某台设备此刻有没有空，请说明去「实验室列表」查看。
+除了实验室相关的问题之外，不要回复无关的问题。
 """
 
 
@@ -35,13 +32,21 @@ def chat(data: ChatRequest):
             history.append(message)
     if not history:
         raise BussinessException(message="请输入您要对话的内容")
+    question = next((item.content
+                     for item in reversed(history) if item.role == 'user'),
+                    "")
+    knowledge = kb_service.search(query=question) if question else ""
+    print('检索到向量库内容', knowledge)
+    system_prompy = SYSTEM_PROMPT
+    if knowledge:
+        system_prompy += "\n\n以下是检索到的实验室资料:\n" + knowledge
+
     client = get_client()
     try:
         res = client.chat.completions.create(
             model=settings.LLM_MODEL,
             messages=[
-                ChatMessage(role="assistant", content=SYSTEM_PROMPT),
-                *history
+                ChatMessage(role="system", content=system_prompy), *history
             ],
         )
         print('res', res)
@@ -52,4 +57,3 @@ def chat(data: ChatRequest):
     except Exception as e:
         print("e is", e)
         raise BussinessException(message="大模型调用失败")
-    

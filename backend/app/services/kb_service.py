@@ -1,0 +1,55 @@
+from chromadb import Collection
+from app.config import BASE_DIR
+import chromadb
+
+KB_DIR = BASE_DIR / "data" / "kb"
+
+CHROMA_DIR = BASE_DIR / "data" / "chroma"
+_collection = None
+
+
+def get_collection() -> Collection:
+    global _collection
+    if _collection is not None:
+        return _collection
+    KB_DIR.mkdir(parents=True, exist_ok=True)
+    CHROMA_DIR.mkdir(parents=True, exist_ok=True)
+    client = chromadb.PersistentClient(path=str(CHROMA_DIR))
+    col = client.get_or_create_collection(name="lab_kb")
+    if col.count() == 0:
+        ids = []
+        docs = []
+        metas = []
+        for path in sorted(KB_DIR.glob("*.md")):
+            text = path.read_text(encoding='UTF-8').strip()
+            if not text:
+                continue
+            docs.append(text)
+            ids.append(path.stem)
+            metas.append({'source': path.name})
+        if docs:
+            col.add(ids=ids, documents=docs, metadatas=metas)
+    _collection = col
+    return _collection
+
+
+def search(query: str):
+    col = get_collection()
+    if col.count() == 0:
+        return ""
+    limit = min(5, col.count())
+    res = col.query(query_texts=[query], n_results=limit)
+    docs = (res.get("documents") or [[]])[0]  #[list]
+    metas = (res.get("metadatas") or [[]])[0]  #[list]
+    distances = (res.get("distances") or [[]])[0]  #[list]
+    score_parts = []
+    for doc, metas, dist in zip(docs, metas, distances):
+        score = 1 / (1 + dist)
+        # if score < 0.5:
+        #     continue
+        name = metas.get("source") or ""
+        score_parts.append({"score": score, "content": f"[{name}]\n{doc}"})
+    print('检索出的score_parts', score_parts)
+    score_parts.sort(key=lambda x: x["score"], reverse=True)
+    final_parts = [item["content"] for item in score_parts[:2]]
+    return "\n\n".join(final_parts)
