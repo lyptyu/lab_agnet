@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     LLM_API_KEY: str
     LLM_MODEL: str
     LLM_BASE_URL: str
+    BAILIAN_BASE_URL: str
+    BAILIAN_API_KEY: str
+    BAILIAN_VECTOR_MODEL:str
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env",
                                       env_file_encoding='utf-8')
 

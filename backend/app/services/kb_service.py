@@ -1,12 +1,27 @@
+from app.config import settings
 from chromadb import Collection
 from app.config import BASE_DIR
 import chromadb
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 
 KB_DIR = BASE_DIR / "data" / "kb"
 
 CHROMA_DIR = BASE_DIR / "data" / "chroma"
 _collection = None
 
+_embedding_fn = None
+
+
+def get_embedding_fn() -> OpenAIEmbeddingFunction:
+    """百炼(兼容 OpenAI 协议)的向量模型，懒加载，避免 import 阶段就崩"""
+    global _embedding_fn
+    if _embedding_fn is None:
+        _embedding_fn = OpenAIEmbeddingFunction(
+            api_key=settings.BAILIAN_API_KEY,
+            model_name=settings.BAILIAN_VECTOR_MODEL,
+            api_base=settings.BAILIAN_BASE_URL,
+        )
+    return _embedding_fn
 
 def get_collection() -> Collection:
     global _collection
@@ -15,7 +30,8 @@ def get_collection() -> Collection:
     KB_DIR.mkdir(parents=True, exist_ok=True)
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    col = client.get_or_create_collection(name="lab_kb")
+    col = client.get_or_create_collection(name="lab_kb",
+                                          embedding_function=get_embedding_fn())
     if col.count() == 0:
         ids = []
         docs = []
