@@ -1,3 +1,4 @@
+from app.services import agent_service
 from app.common.exceptions import BussinessException
 from app.schemas.ai import ChatMessage
 from app.common.response import Response
@@ -17,7 +18,8 @@ router = APIRouter(prefix="/ai", tags=["大模型ai相关api"])
 def chat(data: ChatRequest,
          current_user: User = Depends(get_current_user),
          db: Session = Depends(get_db)):
-    content = ai_service.chat(db, data)
+    content = agent_service.run_agent(db, current_user, data)
+    print('content is', content)
     if not content or not content.strip():
         raise BussinessException(message="大模型没有返回有效内容，请重试")
     return Response.success(

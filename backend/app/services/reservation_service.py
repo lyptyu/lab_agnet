@@ -66,19 +66,20 @@ def create_reservation(db: Session, current_user: User,
     if data.equipment_id:
         equipment = db.query(Equipment).filter(
             Equipment.id == data.equipment_id).first()
-    if not equipment:
-        raise BussinessException('实验室设备不存在')
-    if equipment.status != 1:
-        raise BussinessException('实验室设备正在维修')
+        if not equipment:
+            raise BussinessException('实验室设备不存在')
+        if equipment.status != 1:
+            raise BussinessException('实验室设备正在维修')
     # 实验室设备是否可预约
     query = db.query(Reservation).filter(
         Reservation.lab_id == data.lab_id, Reservation.date == data.date,
         Reservation.status.in_([0, 1]), Reservation.start_time < data.end_time,
         Reservation.end_time > data.start_time)
+    print('data.equipment_id', data.equipment_id)
     if data.equipment_id:  #预约设备
-        query.filter(Reservation.equipment_id == data.equipment_id)
+        query = query.filter(Reservation.equipment_id == data.equipment_id)
     else:  #预约实验室
-        query.filter(Reservation.equipment_id.is_(None))
+        query = query.filter(Reservation.equipment_id.is_(None))
     if query.first():
         raise BussinessException(message='实验室设备该时段已经预约')
 
@@ -92,6 +93,11 @@ def create_reservation(db: Session, current_user: User,
                                     status=0)
     db.add(reservation_model)
     db.commit()
+    db.refresh(reservation_model)
+    print(f'[reservation] 新建预约成功 id={reservation_model.id} '
+          f'user_id={current_user.id} lab_id={data.lab_id} '
+          f'equipment_id={data.equipment_id} '
+          f'{data.date} {data.start_time}~{data.end_time}')
 
 
 def cancel_reservation(db: Session, current_user: User, reservation_id: int):
