@@ -110,9 +110,8 @@ def run_tool(db: Session, name: str, arguments: str) -> str:
         return json.dumps({"error": f"未找到工具：{name}"}, ensure_ascii=False)
 
     except Exception as e:
-        return json.dumps({"error": e.message}, ensure_ascii=False)
-
-
+            return json.dumps({"error": getattr(e, "message", None) or str(e)},
+                          ensure_ascii=False)
 def get_client() -> OpenAI:
     """获取LLM客户端"""
     if not settings.LLM_API_KEY:
@@ -177,6 +176,15 @@ def chat(db: Session, data: ChatRequest):
                     "content": result,
                     "tool_call_id": call.id
                 })
+        # 关键：达到轮次上限仍未给出文字回答，禁用工具强制收尾，保证永不返回 None
+        res = client.chat.completions.create(model=settings.LLM_MODEL,
+                                             messages=messages)
+        content = res.choices[0].message.content
+        if not content or not content.strip():
+            raise BussinessException(message="大模型多次查询资料后仍未给出答复，请换个说法重试")
+        return content
+    except BussinessException:
+        raise  # 业务异常直接上抛，别被下面包装成“大模型调用失败”
     except Exception as e:
         traceback.print_exc()
         raise BussinessException(message="大模型调用失败")
