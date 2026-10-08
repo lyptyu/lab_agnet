@@ -23,6 +23,7 @@ def get_embedding_fn() -> OpenAIEmbeddingFunction:
         )
     return _embedding_fn
 
+
 def get_collection() -> Collection:
     global _collection
     if _collection is not None:
@@ -30,8 +31,8 @@ def get_collection() -> Collection:
     KB_DIR.mkdir(parents=True, exist_ok=True)
     CHROMA_DIR.mkdir(parents=True, exist_ok=True)
     client = chromadb.PersistentClient(path=str(CHROMA_DIR))
-    col = client.get_or_create_collection(name="lab_kb",
-                                          embedding_function=get_embedding_fn())
+    col = client.get_or_create_collection(
+        name="lab_kb", embedding_function=get_embedding_fn())
     if col.count() == 0:
         ids = []
         docs = []
@@ -47,6 +48,12 @@ def get_collection() -> Collection:
             col.add(ids=ids, documents=docs, metadatas=metas)
     _collection = col
     return _collection
+
+
+def warmup():
+    col = get_collection()
+    if col.count() > 0:
+        col.query(query_texts=['预热'], n_results=1)
 
 
 def search(query: str):

@@ -1,3 +1,6 @@
+from app.services import kb_service
+import traceback
+from traceback import print_exc
 from fastapi.concurrency import asynccontextmanager
 from app.services import reservation_service
 import asyncio
@@ -24,6 +27,10 @@ Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    try:
+        await asyncio.to_thread(kb_service.warmup)
+    except Exception:
+        traceback.print_exc()
     task =  asyncio.create_task(reservation_service.run_exire_scan())
     yield
     task.cancel()
