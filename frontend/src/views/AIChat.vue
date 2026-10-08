@@ -46,7 +46,7 @@
           v-model="input"
           type="textarea"
           :rows="2"
-          placeholder="问问实验室怎么预约、开放时间..."
+          placeholder="您好，我是实验室助手。你可以向我提问怎么预约、取消。也可以问现在有哪些实验室、某个实验室的设备信息"
           @keydown.enter.exact.prevent="handleSend"
           @keydown.enter.shift.stop
         ></el-input>
