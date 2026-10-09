@@ -31,9 +31,12 @@ async def lifespan(app: FastAPI):
         await asyncio.to_thread(kb_service.warmup)
     except Exception:
         traceback.print_exc()
-    task =  asyncio.create_task(reservation_service.run_exire_scan())
-    yield
-    task.cancel()
+    task = asyncio.create_task(reservation_service.run_exire_scan())
+    try:
+        yield
+    finally:
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
 
 
 app = FastAPI(lifespan=lifespan)

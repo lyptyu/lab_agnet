@@ -17,7 +17,7 @@ def build_tools(db: Session, current_user: User):
     @tool(description="根据用户提问检索知识库")
     def search_lab_docs(query: str) -> str:
         try:
-            kb_service.search(query) or "没有检索到相关资料"
+            return kb_service.search(query) or "没有检索到相关资料"
         except Exception as exc:
             return json.dumps({
                 "ok": False,

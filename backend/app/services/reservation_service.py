@@ -148,8 +148,10 @@ def expire_pending_reservations():
 
 async def run_exire_scan():
     """1分钟扫描一次"""
-    while True:
-        print('run_exire_scan正在执行中')
-        expire_pending_reservations()
-        await asyncio.sleep(60)
+    try:
+        while True:
+            await asyncio.to_thread(expire_pending_reservations())
+            await asyncio.sleep(60)
+    except asyncio.CancelledError:
+        return
 
